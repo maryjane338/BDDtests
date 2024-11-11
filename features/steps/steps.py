@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QMessageBox
+from unittest.mock import patch
 from behave import Given, When, Then
 from app.addDataWin import AddDataWin
 from app.viewDataWin import ViewDataWin
@@ -39,8 +40,9 @@ def step(context):
 
 @Then('все записи отображаются в окне просмотра')
 def step(context):
-    pass
-
+    context.win_view = ViewDataWin()
+    orders_number = context.win_view.table.rowCount()
+    assert orders_number == 7
 
 
 
@@ -52,10 +54,10 @@ def step(context):
     context.win.show()
     context.win.view_data_btn.click()
 
-@When('пользователь выбирает запись для удаления')
+@When('пользователь выбирает запись')
 def step(context):
     context.win_view = ViewDataWin()
-    context.win_view.table.selectRow(8)
+    context.win_view.table.selectRow(0)
 
 @When('пользователь нажимает кнопку "Изменить"')
 def step(context):
@@ -75,7 +77,13 @@ def step(context):
 
 @When('пользователь нажимает кнопку "Добавить запись"')
 def step(context):
-    context.win_add.add_button.click()
+    pass
+
+@When('пользователь нажимает кнопку Ок в диалоговом окне')
+def step(context):
+    with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
+        context.win_add.add_order()
+
 
 @Then('появляется редактированная запись')
 def step(context):
@@ -171,10 +179,10 @@ def step(context):
     context.win.show()
     context.win.view_data_btn.click()
 
-@When('пользователь выбирает запись')
+@When('пользователь выбирает запись для удаления')
 def step(context):
     context.win_view = ViewDataWin()
-    context.win_view.table.selectRow(8)
+    context.win_view.table.selectRow(7)
     context.row_number = context.win_view.table.rowCount()
 
 @When('пользователь нажимает кнопку "Удалить"')
@@ -187,8 +195,7 @@ def step(context):
 
 @When('пользователь выбирает ещё одну запись')
 def step(context):
-    context.win_view.table.selectRow(8)
-    context.row_number = context.win_view.table.rowCount()
+    context.win_view.table.selectRow(7)
 
 @When('пользователь ещё раз нажимает кнопку "Удалить"')
 def step(context):
@@ -200,5 +207,5 @@ def step(context):
 
 @Then('нужные записи удалены')
 def step(context):
-    pass
-
+    new_row_number = context.win_view.table.rowCount()
+    assert new_row_number != context.row_number
