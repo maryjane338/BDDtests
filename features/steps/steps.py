@@ -75,14 +75,14 @@ def step(context):
     context.win_add.executor_input.setCurrentText('Сидоров')
     context.win_add.status_input.setCurrentText('Ожидание комплектующих')
 
-@When('пользователь нажимает кнопку "Добавить запись"')
-def step(context):
-    pass
-
-@When('пользователь нажимает кнопку Ок в диалоговом окне')
+@When('пользователь нажимает кнопку "Добавить заказ", чтобы сохранить изменения')
 def step(context):
     with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
         context.win_add.add_order()
+
+@When('пользователь нажимает кнопку Ок в диалоговом окне')
+def step(context):
+    pass
 
 
 @Then('появляется редактированная запись')
@@ -119,7 +119,12 @@ def step(context):
 
 @When('пользователь жмёт кнопку "Добавить заказ"')
 def step(context):
-    context.win_add.add_button.click()
+    with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
+        context.win_add.add_button.click()
+
+@When('пользователь жмёт кнопку Ок в диалоговом окне')
+def step(context):
+    pass
 
 @Then('новый заказ добавляется в Базу Данных')
 def step(context):
@@ -155,7 +160,12 @@ def step(context):
 
 @When('пользователь нажимает кнопку "Добавить заказ"')
 def step(context):
-    context.win_add.add_button.click()
+    with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
+        context.win_add.add_button.click()
+
+@When('пользователь нажимает кнопку Ок в информационном диалоговом окне')
+def step(context):
+    pass
 
 @Then('программа выдаёт ошибку')
 def step(context):
@@ -187,7 +197,9 @@ def step(context):
 
 @When('пользователь нажимает кнопку "Удалить"')
 def step(context):
-    context.win_view.del_entry.click()
+    with patch.object(QMessageBox, 'exec', return_value=QMessageBox.StandardButton.Yes):
+        with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
+            context.win_view.del_entry.click()
 
 @When('пользователь нажимает кнопку "Да" в диалоговом окне')
 def step(context):
@@ -199,7 +211,9 @@ def step(context):
 
 @When('пользователь ещё раз нажимает кнопку "Удалить"')
 def step(context):
-    context.win_view.del_entry.click()
+    with patch.object(QMessageBox, 'exec', return_value=QMessageBox.StandardButton.Yes):
+        with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
+            context.win_view.del_entry.click()
 
 @When('пользователь ещё раз нажимает кнопку "Да" в диалоговом окне')
 def step(context):
