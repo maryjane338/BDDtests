@@ -10,18 +10,18 @@ from app.mainWin import MainWin
 
 
 @Given('пользователь открывает приложение для просмотра записей')
-def step_impl(context):
+def step(context):
     context.app = QApplication([])
     context.db = Data("database/temporary_full.db")
     context.win = MainWin()
     context.win.show()
 
 @When('пользователь нажимает кнопку "Просмотреть" для просмотра записей')
-def step_impl(context):
+def step(context):
     context.win.view_data_btn.click()
 
 @Then('окно просмотра записей открыто')
-def step_impl(context):
+def step(context):
     assert context.win.view_data_btn.click() is None
 
 
@@ -62,7 +62,6 @@ def step(context):
 @When('пользователь нажимает кнопку "Изменить"')
 def step(context):
     context.win_add = AddDataWin([context.win_view.table.item(context.win_view.table.selectedItems()[0].row(), col).text() for col in range(context.win_view.table.columnCount())])
-    context.win_add.show()
     context.win_view.edit_entry.click()
 
 @When('пользователь заполняет поля данными')
@@ -78,7 +77,7 @@ def step(context):
 @When('пользователь нажимает кнопку "Добавить заказ", чтобы сохранить изменения')
 def step(context):
     with patch.object(QMessageBox, 'information', return_value=QMessageBox.StandardButton.Ok):
-        context.win_add.add_order()
+        context.win_add.add_button.click()
 
 @When('пользователь нажимает кнопку Ок в диалоговом окне')
 def step(context):
@@ -193,7 +192,7 @@ def step(context):
 def step(context):
     context.win_view = ViewDataWin()
     context.win_view.table.selectRow(7)
-    context.row_number = context.win_view.table.rowCount()
+    context.row_number1 = context.win_view.table.rowCount()
 
 @When('пользователь нажимает кнопку "Удалить"')
 def step(context):
@@ -208,6 +207,7 @@ def step(context):
 @When('пользователь выбирает ещё одну запись')
 def step(context):
     context.win_view.table.selectRow(7)
+    context.row_number2 = context.win_view.table.rowCount()
 
 @When('пользователь ещё раз нажимает кнопку "Удалить"')
 def step(context):
@@ -222,4 +222,5 @@ def step(context):
 @Then('нужные записи удалены')
 def step(context):
     new_row_number = context.win_view.table.rowCount()
-    assert new_row_number != context.row_number
+    assert context.row_number1 != context.row_number2
+    assert new_row_number != context.row_number2
